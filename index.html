@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DelayCam</title>
+    <title>Delayed Playback Camera</title>
     <style>
     body {
         margin: 0;
@@ -99,29 +99,29 @@
             video: { width: 720, height: 480, facingMode: { exact: "environment" } }
         };
 
-        //カメラをvideoと同期する（カメラからの映像をストリームとして持ってきて、video要素にそのまま流し込む）
+        // カメラをvideoと同期する（カメラからの映像をストリームとして持ってきて、video要素にそのまま流し込む） //
         navigator.mediaDevices.getUserMedia(constraints)
         .then( (stream) => {
             video.srcObject = stream;
             video.onloadedmetadata = (e) => { video.play(); };
         });
 
-        //1,3,10,20,30秒前ボタン
+        // 1,3,10,20,30秒前ボタン //
         document.querySelector("#t01").addEventListener("click", () => { imgDelay =  10; delay.innerText = imgDelay/10; });
         document.querySelector("#t03").addEventListener("click", () => { imgDelay =  30; delay.innerText = imgDelay/10; });
         document.querySelector("#t10").addEventListener("click", () => { imgDelay = 100; delay.innerText = imgDelay/10; });
         document.querySelector("#t20").addEventListener("click", () => { imgDelay = 200; delay.innerText = imgDelay/10; });
         document.querySelector("#t30").addEventListener("click", () => { imgDelay = 300; delay.innerText = imgDelay/10; });
 
-        //タイマー処理
+        // タイマー処理 //
         let intervalID = setInterval( () => {           //setIntervalは、一定時間ごとに特定の処理を繰り返すタイマー処理
             let ctx = canvas.getContext("2d");          //canvasを使うときに2D図形を扱うと宣言
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);   //videoから矩形イメージを取り出し、canvasに画像を貼り付ける
             imgArray[imgNumber] = ctx.getImageData(0, 0, canv.width, canv.height);   //canvasから画像を取得して配列に入れる
             imgNumber = imgNumber + 1;                  //現在記録している画像の番号
-            if(imgNumber >= imgMax) { imgNumber = 0; }
+            if (imgNumber >= imgMax) { imgNumber = 0; }
             imgDisplay = imgNumber - imgDelay;          //遅延表示する画像の番号
-            if(imgDisplay < 0) { imgDisplay = imgDisplay + imgMax; }
+            if (imgDisplay < 0) { imgDisplay = imgDisplay + imgMax; }
             //最初は配列に画像が入っていないために起こるエラーの処理。エラーが起こってもプログラムを止めずに画像が貯まるまで待つ
             try { document.getElementById("display").getContext('2d').putImageData(imgArray[imgDisplay], 0, 0); }
             catch (e) {}
